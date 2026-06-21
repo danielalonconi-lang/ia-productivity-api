@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from database import engine
 from models import Base
-#from routers import companies_ai
+from routers import companies_ai
 
 app = FastAPI(
     title="Productivity AI API",
@@ -9,7 +9,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-#app.include_router(companies_ai.router)
+app.include_router(companies_ai.router)
 
 @app.get("/")
 def index():
@@ -18,4 +18,4 @@ def index():
         "message": "Bienvenido a la API de productividad"
     }
     
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
