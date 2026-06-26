@@ -23,6 +23,15 @@ def get_db():
     finally:
         db.close()
 
+# Función auxiliar para clasificar productividad
+def classify_productivity(value: float) -> str:
+    if value < 0.30:
+        return "Baja productividad"
+    elif value < 0.70:
+        return "Productividad media"
+    else:
+        return "Alta productividad"
+
 # Endpoint de predicción
 @router.post("/predict", response_model=CompanyPredictionResponse)
 def predict(data: CompanyCreate):
@@ -41,9 +50,10 @@ def predict(data: CompanyCreate):
     ]
 
     productivity_gain = predict_productivity(features)
+    nivel = classify_productivity(productivity_gain)
 
     return {
-        "message": "Productividad predicha",
+        "message": f"Productividad predicha: {nivel}",
         "productivity_gain": productivity_gain
     }
 
@@ -140,11 +150,4 @@ def update_company(id: int, data: CompanyCreate, db: Session = Depends(get_db)):
 # DELETE
 @router.delete("/{id}")
 def delete_company(id: int, db: Session = Depends(get_db)):
-    company = db.query(CompanyAI).filter(CompanyAI.id == id).first()
-    if not company:
-        raise HTTPException(status_code=404, detail="Registro no encontrado")
-
-    db.delete(company)
-    db.commit()
-
-    return {"message": "Registro eliminado correctamente"}
+    company = db.query(CompanyAI).filter(CompanyAI.id == id).first
